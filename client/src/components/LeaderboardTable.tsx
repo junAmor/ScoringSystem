@@ -18,6 +18,7 @@ interface Participant {
     impact: number;
     finalScore: number;
   };
+  evaluations?: string; // Added evaluations field
 }
 
 interface LeaderboardTableProps {
@@ -33,30 +34,33 @@ export default function LeaderboardTable({
 }: LeaderboardTableProps) {
   const [animationClasses, setAnimationClasses] = useState<Record<number, string>>({});
   const prevRankingsRef = useRef<Record<number, number>>({});
-  
+  const [open, setOpen] = useState(false); // Added state for the dialog
+  const [selectedParticipant, setSelectedParticipant] = useState<Participant | null>(null); //Added state for selected participant
+
+
   // Track rank changes for animation
   useEffect(() => {
     if (participants.length === 0) return;
-    
+
     // Create current rankings
     const currentRankings: Record<number, number> = {};
     participants.forEach((p, index) => {
       currentRankings[p.id] = index;
     });
-    
+
     // Skip on first render
     if (Object.keys(prevRankingsRef.current).length === 0) {
       prevRankingsRef.current = currentRankings;
       return;
     }
-    
+
     // Compare with previous rankings to determine move direction
     const newAnimationClasses: Record<number, string> = {};
-    
+
     participants.forEach((participant) => {
       const prevRank = prevRankingsRef.current[participant.id];
       const currentRank = currentRankings[participant.id];
-      
+
       if (prevRank !== undefined && prevRank !== currentRank) {
         if (prevRank > currentRank) {
           // Moved up in ranking
@@ -67,23 +71,28 @@ export default function LeaderboardTable({
         }
       }
     });
-    
+
     setAnimationClasses(newAnimationClasses);
     prevRankingsRef.current = currentRankings;
-    
+
     // Clear animation classes after animation completes
     const timer = setTimeout(() => {
       setAnimationClasses({});
     }, 1100);
-    
+
     return () => clearTimeout(timer);
   }, [participants]);
-  
+
   // Sort participants by score
   const sortedParticipants = [...participants].sort((a, b) => 
     b.scores.finalScore - a.scores.finalScore
   );
-  
+
+  const handleViewEvaluations = (participant: Participant) => {
+    setSelectedParticipant(participant);
+    setOpen(true);
+  };
+
   return (
     <div className="overflow-hidden">
       <Table className="leaderboard w-full">
@@ -111,8 +120,11 @@ export default function LeaderboardTable({
               Impact
               <span className="text-xs block">(20%)</span>
             </TableHead>
-            <TableHead className="text-white text-center rounded-tr-[50px] font-bold w-[100px]">
+            <TableHead className="text-white text-center font-bold w-[100px]">
               Final Score
+            </TableHead>
+            <TableHead className="text-white text-center rounded-tr-[50px] font-bold w-[50px]">
+              View
             </TableHead>
           </TableRow>
         </TableHeader>
@@ -240,18 +252,34 @@ export default function LeaderboardTable({
               <TableCell className="text-center font-bold rounded-r-[50px] text-lg">
                 {participant.scores.finalScore.toFixed(1)}
               </TableCell>
+              <TableCell>
+                <Button variant="ghost" size="icon" onClick={() => handleViewEvaluations(participant)}>
+                  <Eye className="h-4 w-4" />
+                </Button>
+              </TableCell>
             </TableRow>
           ))}
-          
+
           {participants.length === 0 && (
             <TableRow>
-              <TableCell colSpan={8} className="text-center py-8 text-gray-500">
+              <TableCell colSpan={9} className="text-center py-8 text-gray-500">
                 No participants found. Add participants to see the leaderboard.
               </TableCell>
             </TableRow>
           )}
         </TableBody>
       </Table>
+      <Dialog open={open} onOpenChange={setOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>
+              {selectedParticipant?.projectTitle} Evaluations
+            </DialogTitle>
+          </DialogHeader>
+          {/* Placeholder for evaluations content - needs backend integration */}
+          <p>Evaluations: {selectedParticipant?.evaluations || "No evaluations available"}</p>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
