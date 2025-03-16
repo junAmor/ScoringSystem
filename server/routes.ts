@@ -345,7 +345,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(403).json({ message: "You can only update your own scores" });
       }
 
-      const result = insertScoreSchema.partial().safeParse(req.body);
+      // Use object to create partial validation
+      const result = insertScoreSchema.safeParse({
+        ...existingScore,
+        ...req.body
+      });
       if (!result.success) {
         return res.status(400).json({ message: "Invalid score data", errors: result.error.format() });
       }
