@@ -37,6 +37,7 @@ interface Score {
 
 export default function JudgeEvaluation({ user, onLogout }: JudgeEvaluationProps) {
   const [selectedParticipantId, setSelectedParticipantId] = useState<number | null>(null);
+  const [hasSubmitted, setHasSubmitted] = useState(false);
   const [scores, setScores] = useState<Score>({
     participantId: 0,
     judgeId: user?.id as number,
@@ -92,7 +93,8 @@ export default function JudgeEvaluation({ user, onLogout }: JudgeEvaluationProps
       queryClient.invalidateQueries({ queryKey: [`/api/scores/judge/${user?.id}`] });
       queryClient.invalidateQueries({ queryKey: ['/api/leaderboard'] });
       
-      // Reset edit mode
+      // Set submission state and reset edit mode
+      setHasSubmitted(true);
       setIsEditMode(false);
       
       // Reset form to defaults or load next participant
@@ -177,6 +179,8 @@ export default function JudgeEvaluation({ user, onLogout }: JudgeEvaluationProps
   const handleParticipantChange = (value: string) => {
     const participantId = parseInt(value);
     setSelectedParticipantId(participantId);
+    setHasSubmitted(false);
+    setIsEditMode(false);
     setScores(prev => ({ ...prev, participantId }));
   };
 
@@ -395,7 +399,7 @@ export default function JudgeEvaluation({ user, onLogout }: JudgeEvaluationProps
             </div>
             
             <div className="flex justify-center gap-4">
-              {!isEditMode ? (
+              {hasSubmitted && !isEditMode ? (
                 <Button
                   onClick={() => setIsEditMode(true)}
                   className="bg-blue-600 hover:bg-blue-700 px-8"
@@ -406,7 +410,7 @@ export default function JudgeEvaluation({ user, onLogout }: JudgeEvaluationProps
               ) : null}
               <Button 
                 onClick={handleSubmit}
-                disabled={submitMutation.isPending || !selectedParticipantId}
+                disabled={submitMutation.isPending || !selectedParticipantId || (hasSubmitted && !isEditMode)}
                 className="bg-teal-600 hover:bg-teal-700 px-8"
               >
                 {submitMutation.isPending ? (

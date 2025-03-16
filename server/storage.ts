@@ -215,10 +215,16 @@ export class MemStorage implements IStorage {
     const allScores = await this.getScores();
 
     return allParticipants.map(participant => {
-      // Get all scores for this participant
-      const participantScores = allScores.filter(
-        score => score.participantId === participant.id
-      );
+      // Get latest score from each judge for this participant
+      const participantScores = allScores
+        .filter(score => score.participantId === participant.id)
+        .reduce((latest, score) => {
+          const existingScore = latest.find(s => s.judgeId === score.judgeId);
+          if (!existingScore || new Date(score.createdAt) > new Date(existingScore.createdAt)) {
+            return [...latest.filter(s => s.judgeId !== score.judgeId), score];
+          }
+          return latest;
+        }, [] as Score[]);
 
       // Calculate averages for each criteria
       let totalProjectDesign = 0;
