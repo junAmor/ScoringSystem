@@ -309,20 +309,36 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post("/api/scores", isAuthenticated, async (req, res) => {
     try {
-      const result = insertScoreSchema.safeParse(req.body);
+      console.log("Received score data:", req.body);
+      
+      // Convert string scores to numbers before validation
+      const parsedData = {
+        ...req.body,
+        participantId: Number(req.body.participantId),
+        judgeId: Number(req.body.judgeId),
+        projectDesign: Number(req.body.projectDesign),
+        functionality: Number(req.body.functionality),
+        presentation: Number(req.body.presentation),
+        webDesign: Number(req.body.webDesign),
+        impact: Number(req.body.impact)
+      };
+      
+      const result = insertScoreSchema.safeParse(parsedData);
       if (!result.success) {
+        console.error("Validation errors:", result.error.format());
         return res.status(400).json({ message: "Invalid score data", errors: result.error.format() });
       }
       
       // Ensure the judge ID matches the authenticated user if not admin
       const user = req.user as any;
-      if (user.role !== 'admin' && result.data.judgeId !== user.id) {
+      if (user.role !== 'admin' && Number(result.data.judgeId) !== user.id) {
         return res.status(403).json({ message: "You can only submit scores as yourself" });
       }
       
       const score = await storage.createScore(result.data);
       res.status(201).json(score);
     } catch (error) {
+      console.error("Score creation error:", error);
       res.status(500).json({ message: "Failed to create score" });
     }
   });

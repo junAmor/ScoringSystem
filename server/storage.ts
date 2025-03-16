@@ -136,11 +136,22 @@ export class MemStorage implements IStorage {
 
   async createScore(insertScore: InsertScore): Promise<Score> {
     const id = this.scoreId++;
+    
+    // Make sure all values are numbers when storing
     const score: Score = { 
       ...insertScore, 
       id,
-      createdAt: new Date() 
+      createdAt: new Date(),
+      projectDesign: Number(insertScore.projectDesign),
+      functionality: Number(insertScore.functionality),
+      presentation: Number(insertScore.presentation),
+      webDesign: Number(insertScore.webDesign),
+      impact: Number(insertScore.impact),
+      participantId: Number(insertScore.participantId),
+      judgeId: Number(insertScore.judgeId)
     };
+    
+    console.log("Storing score:", score);
     this.scores.set(id, score);
     return score;
   }
@@ -163,7 +174,33 @@ export class MemStorage implements IStorage {
     const score = this.scores.get(id);
     if (!score) return undefined;
 
-    const updatedScore = { ...score, ...scoreData };
+    // Convert string values to numbers if they exist in the update data
+    const parsedScoreData = { ...scoreData };
+    
+    if (parsedScoreData.projectDesign !== undefined) {
+      parsedScoreData.projectDesign = Number(parsedScoreData.projectDesign);
+    }
+    if (parsedScoreData.functionality !== undefined) {
+      parsedScoreData.functionality = Number(parsedScoreData.functionality);
+    }
+    if (parsedScoreData.presentation !== undefined) {
+      parsedScoreData.presentation = Number(parsedScoreData.presentation);
+    }
+    if (parsedScoreData.webDesign !== undefined) {
+      parsedScoreData.webDesign = Number(parsedScoreData.webDesign);
+    }
+    if (parsedScoreData.impact !== undefined) {
+      parsedScoreData.impact = Number(parsedScoreData.impact);
+    }
+    if (parsedScoreData.participantId !== undefined) {
+      parsedScoreData.participantId = Number(parsedScoreData.participantId);
+    }
+    if (parsedScoreData.judgeId !== undefined) {
+      parsedScoreData.judgeId = Number(parsedScoreData.judgeId);
+    }
+
+    const updatedScore = { ...score, ...parsedScoreData };
+    console.log("Updating score:", updatedScore);
     this.scores.set(id, updatedScore);
     return updatedScore;
   }

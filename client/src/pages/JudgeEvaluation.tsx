@@ -64,21 +64,23 @@ export default function JudgeEvaluation({ user, onLogout }: JudgeEvaluationProps
 
   const submitMutation = useMutation({
     mutationFn: async (data: Score) => {
-      // Convert all score values to numbers
-      const numericData = {
+      // Convert all score values to strings for the API
+      const formattedData = {
         ...data,
         participantId: Number(data.participantId),
         judgeId: Number(data.judgeId),
-        projectDesign: Number(data.projectDesign),
-        functionality: Number(data.functionality),
-        presentation: Number(data.presentation),
-        webDesign: Number(data.webDesign),
-        impact: Number(data.impact)
+        projectDesign: String(data.projectDesign),
+        functionality: String(data.functionality),
+        presentation: String(data.presentation),
+        webDesign: String(data.webDesign),
+        impact: String(data.impact)
       };
       
-      const res = await apiRequest('POST', '/api/scores', numericData);
+      console.log("Submitting score data:", formattedData);
+      const res = await apiRequest('POST', '/api/scores', formattedData);
       if (!res.ok) {
         const errorData = await res.json();
+        console.error("API error:", errorData);
         throw new Error(errorData.message || "Failed to submit evaluation");
       }
       return res.json();

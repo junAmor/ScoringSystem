@@ -51,15 +51,7 @@ export const insertScoreSchema = createInsertSchema(scores)
     webDesign: true,
     impact: true,
     comments: true,
-  })
-  .transform((data) => ({
-    ...data,
-    projectDesign: Number(data.projectDesign),
-    functionality: Number(data.functionality),
-    presentation: Number(data.presentation),
-    webDesign: Number(data.webDesign),
-    impact: Number(data.impact),
-  }));
+  });
 
 // Types
 export type User = typeof users.$inferSelect;
