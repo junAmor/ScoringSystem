@@ -14,7 +14,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 
 interface JudgeManagementProps {
-  user: { role: string } | null; // Corrected type definition
+  user: any;
   onLogout: () => void;
 }
 
@@ -40,8 +40,8 @@ export default function JudgeManagement({ user, onLogout }: JudgeManagementProps
 
   const isAdmin = user?.role === 'admin';
 
-  // Improved unauthorized access check
-  if (!user || !isAdmin) {
+  // Redirect non-admin users
+  if (!isAdmin) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center">
         <h2 className="text-2xl font-bold text-red-500 mb-4">Unauthorized Access</h2>
@@ -120,7 +120,7 @@ export default function JudgeManagement({ user, onLogout }: JudgeManagementProps
   });
 
   const handleDeleteClick = (judge: Judge) => {
-    if (judge.id === user?.id) { // Added safer check for user.id
+    if (judge.id === user.id) {
       toast({
         title: "Error",
         description: "You cannot delete your own account",
