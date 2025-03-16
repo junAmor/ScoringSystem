@@ -7,6 +7,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import ScoreSlider from "@/components/ScoreSlider";
 import SuccessModal from "@/components/SuccessModal";
+import ScoreCalculationVisualizer from "@/components/ScoreCalculationVisualizer";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
@@ -38,7 +39,7 @@ export default function JudgeEvaluation({ user, onLogout }: JudgeEvaluationProps
   const [selectedParticipantId, setSelectedParticipantId] = useState<number | null>(null);
   const [scores, setScores] = useState<Score>({
     participantId: 0,
-    judgeId: user?.id || 0,
+    judgeId: user?.id as number,
     projectDesign: 50,
     functionality: 50,
     presentation: 50,
@@ -49,6 +50,7 @@ export default function JudgeEvaluation({ user, onLogout }: JudgeEvaluationProps
   const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
   const [successMessage, setSuccessMessage] = useState("");
   const [totalScore, setTotalScore] = useState(0);
+  const [showScoreAnimation, setShowScoreAnimation] = useState(false);
   
   const { toast } = useToast();
   const queryClient = useQueryClient();
@@ -196,7 +198,15 @@ export default function JudgeEvaluation({ user, onLogout }: JudgeEvaluationProps
       return;
     }
     
-    submitMutation.mutate(scores);
+    // Make sure judgeId is set correctly before submission
+    const scoreData = {
+      ...scores,
+      judgeId: user?.id as number,
+      participantId: selectedParticipantId
+    };
+    
+    console.log("Submitting with judgeId:", user?.id);
+    submitMutation.mutate(scoreData);
   };
 
   const selectedParticipant = participants.find(p => p.id === selectedParticipantId);
