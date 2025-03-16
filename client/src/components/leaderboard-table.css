@@ -13,8 +13,10 @@
 }
 
 /* Remove hover effect from table header */
-.leaderboard thead tr:hover {
+.leaderboard thead tr:hover,
+.leaderboard thead tr th:hover {
   background-color: transparent !important;
+  cursor: default;
 }
 
 /* Add gaps between rows */

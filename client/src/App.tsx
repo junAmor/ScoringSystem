@@ -9,6 +9,7 @@ import Leaderboard from "@/pages/Leaderboard";
 import ParticipantManagement from "@/pages/ParticipantManagement";
 import JudgeManagement from "@/pages/JudgeManagement";
 import JudgeEvaluation from "@/pages/JudgeEvaluation";
+import Settings from './components/Settings'; // Added import for Settings component
 import { useEffect, useState } from "react";
 import { apiRequest } from "./lib/queryClient";
 
@@ -31,7 +32,7 @@ function App() {
         if (res.ok) {
           const userData = await res.json();
           setUser(userData);
-          
+
           // Redirect to appropriate page based on role
           if (location === '/' || location === '/judge-login') {
             if (userData.role === 'admin') {
@@ -61,14 +62,14 @@ function App() {
       const res = await apiRequest('POST', '/api/login', { username, password });
       const userData = await res.json();
       setUser(userData);
-      
+
       // Redirect based on user role
       if (userData.role === 'admin') {
         setLocation('/leaderboard');
       } else if (userData.role === 'judge') {
         setLocation('/evaluation');
       }
-      
+
       return true;
     } catch (error) {
       console.error("Login failed:", error);
@@ -115,6 +116,9 @@ function App() {
           </Route>
           <Route path="/evaluation">
             <JudgeEvaluation user={user} onLogout={handleLogout} />
+          </Route>
+          <Route path="/settings"> {/* Added route for Settings */}
+            <Settings />
           </Route>
           <Route>
             <NotFound />
