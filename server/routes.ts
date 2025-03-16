@@ -311,18 +311,21 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       console.log("Received score data:", req.body);
       
-      // Convert string scores to numbers before validation
+      // Prepare data for validation - participantId and judgeId need to be numbers
+      // but score values should stay as strings
       const parsedData = {
         ...req.body,
         participantId: Number(req.body.participantId),
         judgeId: Number(req.body.judgeId),
-        projectDesign: Number(req.body.projectDesign),
-        functionality: Number(req.body.functionality),
-        presentation: Number(req.body.presentation),
-        webDesign: Number(req.body.webDesign),
-        impact: Number(req.body.impact)
+        // Keep these as strings per our schema
+        projectDesign: String(req.body.projectDesign),
+        functionality: String(req.body.functionality),
+        presentation: String(req.body.presentation),
+        webDesign: String(req.body.webDesign),
+        impact: String(req.body.impact)
       };
       
+      // Validate the data
       const result = insertScoreSchema.safeParse(parsedData);
       if (!result.success) {
         console.error("Validation errors:", result.error.format());
@@ -335,6 +338,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(403).json({ message: "You can only submit scores as yourself" });
       }
       
+      // Create the score
       const score = await storage.createScore(result.data);
       res.status(201).json(score);
     } catch (error) {
@@ -361,12 +365,32 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(403).json({ message: "You can only update your own scores" });
       }
 
+      // Convert score data to the correct types
+      const parsedBody = { ...req.body };
+      if (parsedBody.projectDesign !== undefined) {
+        parsedBody.projectDesign = String(parsedBody.projectDesign);
+      }
+      if (parsedBody.functionality !== undefined) {
+        parsedBody.functionality = String(parsedBody.functionality);
+      }
+      if (parsedBody.presentation !== undefined) {
+        parsedBody.presentation = String(parsedBody.presentation);
+      }
+      if (parsedBody.webDesign !== undefined) {
+        parsedBody.webDesign = String(parsedBody.webDesign);
+      }
+      if (parsedBody.impact !== undefined) {
+        parsedBody.impact = String(parsedBody.impact);
+      }
+      
       // Use object to create partial validation
       const result = insertScoreSchema.safeParse({
         ...existingScore,
-        ...req.body
+        ...parsedBody
       });
+      
       if (!result.success) {
+        console.error("Update validation errors:", result.error.format());
         return res.status(400).json({ message: "Invalid score data", errors: result.error.format() });
       }
 
@@ -377,6 +401,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         res.status(404).json({ message: "Score not found" });
       }
     } catch (error) {
+      console.error("Score update error:", error);
       res.status(500).json({ message: "Failed to update score" });
     }
   });

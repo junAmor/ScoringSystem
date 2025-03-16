@@ -137,16 +137,16 @@ export class MemStorage implements IStorage {
   async createScore(insertScore: InsertScore): Promise<Score> {
     const id = this.scoreId++;
     
-    // Make sure all values are numbers when storing
+    // Make sure all values are strings when storing (as per schema)
     const score: Score = { 
       ...insertScore, 
       id,
       createdAt: new Date(),
-      projectDesign: Number(insertScore.projectDesign),
-      functionality: Number(insertScore.functionality),
-      presentation: Number(insertScore.presentation),
-      webDesign: Number(insertScore.webDesign),
-      impact: Number(insertScore.impact),
+      projectDesign: String(insertScore.projectDesign),
+      functionality: String(insertScore.functionality),
+      presentation: String(insertScore.presentation),
+      webDesign: String(insertScore.webDesign),
+      impact: String(insertScore.impact),
       participantId: Number(insertScore.participantId),
       judgeId: Number(insertScore.judgeId)
     };
@@ -174,23 +174,23 @@ export class MemStorage implements IStorage {
     const score = this.scores.get(id);
     if (!score) return undefined;
 
-    // Convert string values to numbers if they exist in the update data
+    // Convert values to strings if they exist in the update data
     const parsedScoreData = { ...scoreData };
     
     if (parsedScoreData.projectDesign !== undefined) {
-      parsedScoreData.projectDesign = Number(parsedScoreData.projectDesign);
+      parsedScoreData.projectDesign = String(parsedScoreData.projectDesign);
     }
     if (parsedScoreData.functionality !== undefined) {
-      parsedScoreData.functionality = Number(parsedScoreData.functionality);
+      parsedScoreData.functionality = String(parsedScoreData.functionality);
     }
     if (parsedScoreData.presentation !== undefined) {
-      parsedScoreData.presentation = Number(parsedScoreData.presentation);
+      parsedScoreData.presentation = String(parsedScoreData.presentation);
     }
     if (parsedScoreData.webDesign !== undefined) {
-      parsedScoreData.webDesign = Number(parsedScoreData.webDesign);
+      parsedScoreData.webDesign = String(parsedScoreData.webDesign);
     }
     if (parsedScoreData.impact !== undefined) {
-      parsedScoreData.impact = Number(parsedScoreData.impact);
+      parsedScoreData.impact = String(parsedScoreData.impact);
     }
     if (parsedScoreData.participantId !== undefined) {
       parsedScoreData.participantId = Number(parsedScoreData.participantId);

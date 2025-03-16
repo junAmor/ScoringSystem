@@ -64,16 +64,16 @@ export default function JudgeEvaluation({ user, onLogout }: JudgeEvaluationProps
 
   const submitMutation = useMutation({
     mutationFn: async (data: Score) => {
-      // Convert all score values to strings for the API
+      // Make sure we're sending the exact fields the backend expects
       const formattedData = {
-        ...data,
-        participantId: Number(data.participantId),
-        judgeId: Number(data.judgeId),
+        participantId: data.participantId,
+        judgeId: data.judgeId,
         projectDesign: String(data.projectDesign),
         functionality: String(data.functionality),
         presentation: String(data.presentation),
         webDesign: String(data.webDesign),
-        impact: String(data.impact)
+        impact: String(data.impact),
+        comments: data.comments || ""
       };
       
       console.log("Submitting score data:", formattedData);
