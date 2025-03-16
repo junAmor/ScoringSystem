@@ -4,6 +4,7 @@ import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import NotFound from "@/pages/not-found";
 import Login from "@/pages/Login";
+import JudgeLogin from "@/pages/JudgeLogin";
 import Leaderboard from "@/pages/Leaderboard";
 import ParticipantManagement from "@/pages/ParticipantManagement";
 import JudgeManagement from "@/pages/JudgeManagement";
@@ -31,13 +32,17 @@ function App() {
           const userData = await res.json();
           setUser(userData);
           
-          // Redirect to appropriate page if on login page
-          if (location === '/') {
-            setLocation('/leaderboard');
+          // Redirect to appropriate page based on role
+          if (location === '/' || location === '/judge-login') {
+            if (userData.role === 'admin') {
+              setLocation('/leaderboard');
+            } else if (userData.role === 'judge') {
+              setLocation('/evaluation');
+            }
           }
         } else {
-          // If not authenticated and not on login page, redirect to login
-          if (location !== '/') {
+          // If not authenticated and not on login pages, redirect to appropriate login
+          if (location !== '/' && location !== '/judge-login') {
             setLocation('/');
           }
         }
@@ -56,7 +61,14 @@ function App() {
       const res = await apiRequest('POST', '/api/login', { username, password });
       const userData = await res.json();
       setUser(userData);
-      setLocation('/leaderboard');
+      
+      // Redirect based on user role
+      if (userData.role === 'admin') {
+        setLocation('/leaderboard');
+      } else if (userData.role === 'judge') {
+        setLocation('/evaluation');
+      }
+      
       return true;
     } catch (error) {
       console.error("Login failed:", error);
@@ -88,6 +100,9 @@ function App() {
         <Switch>
           <Route path="/">
             <Login onLogin={handleLogin} />
+          </Route>
+          <Route path="/judge-login">
+            <JudgeLogin onLogin={handleLogin} />
           </Route>
           <Route path="/leaderboard">
             <Leaderboard user={user} onLogout={handleLogout} />

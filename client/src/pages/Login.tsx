@@ -1,9 +1,10 @@
 import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
+import { useLocation } from "wouter";
 
 interface LoginProps {
   onLogin: (username: string, password: string) => Promise<boolean>;
@@ -14,6 +15,7 @@ export default function Login({ onLogin }: LoginProps) {
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
+  const [, setLocation] = useLocation();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -101,6 +103,15 @@ export default function Login({ onLogin }: LoginProps) {
               </Button>
             </form>
           </CardContent>
+          <CardFooter className="flex justify-center">
+            <Button 
+              variant="link" 
+              className="text-primary" 
+              onClick={() => setLocation('/judge-login')}
+            >
+              Judge Login
+            </Button>
+          </CardFooter>
         </Card>
       </div>
     </div>

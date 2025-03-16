@@ -27,12 +27,12 @@ export default function LeaderboardTable({
   onScoreChange 
 }: LeaderboardTableProps) {
   return (
-    <div className="overflow-x-auto">
-      <Table>
+    <div className="overflow-x-visible">
+      <Table className="leaderboard">
         <TableHeader>
           <TableRow className="bg-primary">
             <TableHead className="text-white rounded-tl-lg">Team</TableHead>
-            <TableHead className="text-white w-1/4">Project Title</TableHead>
+            <TableHead className="text-white">Project Title</TableHead>
             <TableHead className="text-white text-center">
               Project Design
               <span className="text-xs block">(25%)</span>
@@ -63,10 +63,10 @@ export default function LeaderboardTable({
             <TableRow 
               key={participant.id}
               className={
-                index === 0 ? "bg-amber-300 border-b border-gray-200" :
-                index === 1 ? "bg-amber-200/70 border-b border-gray-200" :
-                index === 2 ? "bg-amber-100/60 border-b border-gray-200" :
-                "bg-white border-b border-gray-200"
+                index === 0 ? "bg-amber-300 border-b border-gray-200 rounded-[50px]" :
+                index === 1 ? "bg-amber-200/70 border-b border-gray-200 rounded-[50px]" :
+                index === 2 ? "bg-amber-100/60 border-b border-gray-200 rounded-[50px]" :
+                "bg-white border-b border-gray-200 rounded-[50px]"
               }
             >
               <TableCell className="font-medium">{participant.teamName}</TableCell>
