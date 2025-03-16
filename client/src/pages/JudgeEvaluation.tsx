@@ -92,6 +92,9 @@ export default function JudgeEvaluation({ user, onLogout }: JudgeEvaluationProps
       queryClient.invalidateQueries({ queryKey: [`/api/scores/judge/${user?.id}`] });
       queryClient.invalidateQueries({ queryKey: ['/api/leaderboard'] });
       
+      // Reset edit mode
+      setIsEditMode(false);
+      
       // Reset form to defaults or load next participant
       setScores({
         participantId: selectedParticipantId || 0,
@@ -105,7 +108,7 @@ export default function JudgeEvaluation({ user, onLogout }: JudgeEvaluationProps
       });
       
       // Show success message
-      setSuccessMessage("Evaluation submitted successfully!");
+      setSuccessMessage(isEditMode ? "Evaluation updated successfully!" : "Evaluation submitted successfully!");
       setIsSuccessModalOpen(true);
     },
     onError: (error: any) => {
@@ -118,6 +121,8 @@ export default function JudgeEvaluation({ user, onLogout }: JudgeEvaluationProps
     },
   });
 
+  const [isEditMode, setIsEditMode] = useState(false);
+  
   // Set initial participant if available
   useEffect(() => {
     if (participants.length > 0 && !selectedParticipantId) {
@@ -129,15 +134,20 @@ export default function JudgeEvaluation({ user, onLogout }: JudgeEvaluationProps
   // Load existing scores when participant changes
   useEffect(() => {
     if (selectedParticipantId && judgeScores.length > 0) {
-      const existingScore = judgeScores.find(score => score.participantId === selectedParticipantId);
+      // Get the latest score for this participant
+      const existingScores = judgeScores
+        .filter(score => score.participantId === selectedParticipantId)
+        .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
       
-      if (existingScore) {
+      const latestScore = existingScores[0];
+      
+      if (latestScore && !isEditMode) {
         setScores({
-          ...existingScore,
+          ...latestScore,
           judgeId: user?.id,
         });
-      } else {
-        // Reset to defaults if no existing score
+      } else if (!latestScore || isEditMode) {
+        // Reset to defaults if no existing score or in edit mode
         setScores({
           participantId: selectedParticipantId,
           judgeId: user?.id,
@@ -150,7 +160,7 @@ export default function JudgeEvaluation({ user, onLogout }: JudgeEvaluationProps
         });
       }
     }
-  }, [selectedParticipantId, judgeScores, user?.id]);
+  }, [selectedParticipantId, judgeScores, user?.id, isEditMode]);
 
   // Calculate total score
   useEffect(() => {
@@ -384,7 +394,16 @@ export default function JudgeEvaluation({ user, onLogout }: JudgeEvaluationProps
               />
             </div>
             
-            <div className="flex justify-center">
+            <div className="flex justify-center gap-4">
+              {!isEditMode ? (
+                <Button
+                  onClick={() => setIsEditMode(true)}
+                  className="bg-blue-600 hover:bg-blue-700 px-8"
+                  disabled={!selectedParticipantId}
+                >
+                  Edit Evaluation
+                </Button>
+              ) : null}
               <Button 
                 onClick={handleSubmit}
                 disabled={submitMutation.isPending || !selectedParticipantId}
@@ -395,7 +414,7 @@ export default function JudgeEvaluation({ user, onLogout }: JudgeEvaluationProps
                     <span className="animate-spin mr-2 h-4 w-4 border-2 border-current border-t-transparent rounded-full"></span>
                     Submitting...
                   </span>
-                ) : "Submit Evaluation"}
+                ) : isEditMode ? "Update Evaluation" : "Submit Evaluation"}
               </Button>
             </div>
           </CardContent>
