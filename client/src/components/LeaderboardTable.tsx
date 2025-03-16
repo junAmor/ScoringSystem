@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Table, TableBody, TableCell, TableHead, TableRow } from "@/components/ui/table";
 import { Eye } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -124,7 +124,7 @@ export default function LeaderboardTable({
               Final Score
             </TableHead>
             <TableHead className="text-white text-center rounded-tr-[50px] font-bold w-[50px]">
-              View
+              View Evaluations
             </TableHead>
           </TableRow>
         </TableHeader>
@@ -276,7 +276,6 @@ export default function LeaderboardTable({
               {selectedParticipant?.projectTitle} Evaluations
             </DialogTitle>
           </DialogHeader>
-          {/* Placeholder for evaluations content - needs backend integration */}
           <p>Evaluations: {selectedParticipant?.evaluations || "No evaluations available"}</p>
         </DialogContent>
       </Dialog>
