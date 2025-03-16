@@ -9,7 +9,7 @@ import Leaderboard from "@/pages/Leaderboard";
 import ParticipantManagement from "@/pages/ParticipantManagement";
 import JudgeManagement from "@/pages/JudgeManagement";
 import JudgeEvaluation from "@/pages/JudgeEvaluation";
-import Settings from './components/Settings'; // Added import for Settings component
+import Settings from './components/Settings'; 
 import { useEffect, useState } from "react";
 import { apiRequest } from "./lib/queryClient";
 
@@ -117,8 +117,11 @@ function App() {
           <Route path="/evaluation">
             <JudgeEvaluation user={user} onLogout={handleLogout} />
           </Route>
-          <Route path="/settings"> {/* Added route for Settings */}
+          <Route path="/settings"> 
             <Settings />
+          </Route>
+          <Route path="/judge-management">
+            <JudgeManagement />
           </Route>
           <Route>
             <NotFound />

@@ -383,3 +383,135 @@ export default function JudgeManagement({ user, onLogout }: JudgeManagementProps
     </div>
   );
 }
+import { useState, useEffect } from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { useToast } from "@/hooks/use-toast";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+
+export default function JudgeManagement() {
+  const { toast } = useToast();
+  const [judges, setJudges] = useState([]);
+  const [newJudge, setNewJudge] = useState({ username: '', password: '' });
+
+  useEffect(() => {
+    fetchJudges();
+  }, []);
+
+  const fetchJudges = async () => {
+    try {
+      const response = await fetch('/api/users');
+      const data = await response.json();
+      setJudges(data.filter(user => user.role === 'judge'));
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to fetch judges",
+        variant: "destructive"
+      });
+    }
+  };
+
+  const handleAddJudge = async () => {
+    try {
+      const response = await fetch('/api/users', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ...newJudge, role: 'judge' })
+      });
+
+      if (response.ok) {
+        toast({
+          title: "Success",
+          description: "Judge added successfully"
+        });
+        setNewJudge({ username: '', password: '' });
+        fetchJudges();
+      } else {
+        throw new Error('Failed to add judge');
+      }
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to add judge",
+        variant: "destructive"
+      });
+    }
+  };
+
+  const handleDeleteJudge = async (id: number) => {
+    try {
+      const response = await fetch(`/api/users/${id}`, {
+        method: 'DELETE'
+      });
+
+      if (response.ok) {
+        toast({
+          title: "Success",
+          description: "Judge deleted successfully"
+        });
+        fetchJudges();
+      } else {
+        throw new Error('Failed to delete judge');
+      }
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to delete judge",
+        variant: "destructive"
+      });
+    }
+  };
+
+  return (
+    <div className="p-4">
+      <Card>
+        <CardHeader>
+          <CardTitle>Judge Accounts</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="flex gap-4 mb-6">
+            <Input
+              placeholder="Username"
+              value={newJudge.username}
+              onChange={(e) => setNewJudge(prev => ({...prev, username: e.target.value}))}
+            />
+            <Input
+              type="password"
+              placeholder="Password"
+              value={newJudge.password}
+              onChange={(e) => setNewJudge(prev => ({...prev, password: e.target.value}))}
+            />
+            <Button onClick={handleAddJudge}>Add Judge</Button>
+          </div>
+
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Username</TableHead>
+                <TableHead>Actions</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {judges.map((judge: any) => (
+                <TableRow key={judge.id}>
+                  <TableCell>{judge.username}</TableCell>
+                  <TableCell>
+                    <Button 
+                      variant="destructive" 
+                      size="sm"
+                      onClick={() => handleDeleteJudge(judge.id)}
+                    >
+                      Delete
+                    </Button>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
