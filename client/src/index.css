@@ -11,3 +11,50 @@
     @apply font-sans antialiased bg-background text-foreground;
   }
 }
+
+@layer components {
+  /* Leaderboard Table Styles */
+  .leaderboard tbody tr:not(.winner) td:last-child {
+    opacity: 15;
+    font-weight: bold;
+  }
+  
+  .leaderboard tbody tr td:first-child {
+    border-top-left-radius: 50px;
+    border-bottom-left-radius: 50px;
+  }
+  
+  .leaderboard tbody tr td:last-child {
+    border-top-right-radius: 50px;
+    border-bottom-right-radius: 50px;
+  }
+  
+  .leaderboard thead tr th:nth-child(2) {
+    width: 600px;
+  }
+  
+  .leaderboard thead tr th:nth-child(3),
+  .leaderboard thead tr th:nth-child(4),
+  .leaderboard thead tr th:nth-child(5),
+  .leaderboard thead tr th:nth-child(6),
+  .leaderboard thead tr th:nth-child(7) {
+    font-size: 10px;
+    width: 80px;
+  }
+  
+  .leaderboard-title {
+    text-align: start;
+    font-size: 24px;
+    font-weight: bold;
+    margin-top: 50px;
+    margin-left: 50px;
+    margin-bottom: 30px;
+  }
+  
+  .leaderboard-table {
+    background: linear-gradient(to bottom, rgb(186, 241, 241), rgba(186, 241, 241, 0.5));
+    padding: 20px;
+    height: 1000px;
+    border-radius: 10px;
+  }
+}

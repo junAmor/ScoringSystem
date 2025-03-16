@@ -100,12 +100,14 @@ export default function Leaderboard({ user, onLogout }: LeaderboardProps) {
                 <p>Failed to load leaderboard data</p>
               </div>
             ) : (
-              <div className="overflow-x-auto">
-                <Table>
+              <div className="leaderboard-table">
+                <h2 className="leaderboard-title">Competition Leaderboard</h2>
+                <div className="overflow-x-visible">
+                <Table className="leaderboard">
                   <TableHeader>
                     <TableRow className="bg-primary">
                       <TableHead className="text-white rounded-tl-lg">Team</TableHead>
-                      <TableHead className="text-white w-1/4">Project Title</TableHead>
+                      <TableHead className="text-white">Project Title</TableHead>
                       <TableHead className="text-white text-center">
                         Project Design
                         <span className="text-xs block">(25%)</span>
@@ -308,6 +310,7 @@ export default function Leaderboard({ user, onLogout }: LeaderboardProps) {
                     )}
                   </TableBody>
                 </Table>
+                </div>
               </div>
             )}
           </CardContent>
