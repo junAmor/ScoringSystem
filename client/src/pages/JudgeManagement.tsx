@@ -38,33 +38,8 @@ export default function JudgeManagement({ user, onLogout }: JudgeManagementProps
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
+  // Admin is already authenticated at this point
   const isAdmin = user?.role === 'admin';
-
-  // Check if user is logged in
-  if (!user) {
-    return (
-      <div className="min-h-screen flex flex-col items-center justify-center">
-        <h2 className="text-2xl font-bold text-red-500 mb-4">Please Log In</h2>
-        <p className="mb-4">You need to log in to access this page.</p>
-        <Button onClick={() => window.location.href = "/login"}>
-          Go to Login
-        </Button>
-      </div>
-    );
-  }
-
-  // Redirect non-admin users
-  if (user.role !== 'admin') {
-    return (
-      <div className="min-h-screen flex flex-col items-center justify-center">
-        <h2 className="text-2xl font-bold text-red-500 mb-4">Unauthorized Access</h2>
-        <p className="mb-4">Only administrators can access this page.</p>
-        <Button onClick={() => window.location.href = "/leaderboard"}>
-          Return to Leaderboard
-        </Button>
-      </div>
-    );
-  }
 
   const { data: judges = [], isLoading } = useQuery<Judge[]>({
     queryKey: ['/api/users'],
