@@ -408,6 +408,12 @@ export default function JudgeEvaluation({ user, onLogout }: JudgeEvaluationProps
         message={successMessage}
         onClose={() => setIsSuccessModalOpen(false)}
       />
+      
+      {/* Score Calculation Visualizer */}
+      <ScoreCalculationVisualizer 
+        scores={scores}
+        showAnimation={showScoreAnimation}
+      />
     </div>
   );
 }
