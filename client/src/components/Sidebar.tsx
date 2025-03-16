@@ -4,11 +4,11 @@ import { Button } from "@/components/ui/button";
 interface SidebarProps {
   isOpen: boolean;
   onClose: () => void;
-  onLogout: () => void;
-  isAdmin: boolean;
+  isAdmin?: boolean;
+  user?: { role: string };
 }
 
-export default function Sidebar({ isOpen, onClose, onLogout, isAdmin }: SidebarProps) {
+export default function Sidebar({ isOpen, onClose, isAdmin, user }: SidebarProps) {
   // Close sidebar when clicking a link
   const handleNavigation = () => {
     onClose();

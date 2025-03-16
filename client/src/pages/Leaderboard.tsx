@@ -30,7 +30,7 @@ export default function Leaderboard({ user, onLogout }: LeaderboardProps) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const { toast } = useToast();
   const queryClient = useQueryClient();
-  
+
   // Set up polling for real-time updates (every 5 seconds)
   const { data: leaderboard = [], isLoading, error } = useQuery<Participant[]>({
     queryKey: ['/api/leaderboard'],
@@ -38,19 +38,19 @@ export default function Leaderboard({ user, onLogout }: LeaderboardProps) {
   });
 
   const isAdmin = user?.role === 'admin';
-  
+
   // WebSocket setup for real-time updates (if we had WebSockets)
   // Since we don't have actual WebSockets, we'll rely on polling
 
   // Handle score changes (admin only)
   const handleScoreChange = async (participantId: number, criteria: string, value: number) => {
     if (!isAdmin) return;
-    
+
     try {
       // Find the participant
       const participant = leaderboard.find(p => p.id === participantId);
       if (!participant) return;
-      
+
       // Create the updated scores object
       const scores = {
         projectDesign: participant.scores.projectDesign,
@@ -60,19 +60,19 @@ export default function Leaderboard({ user, onLogout }: LeaderboardProps) {
         impact: participant.scores.impact,
         [criteria]: value
       };
-      
+
       // Send the update
       const scoreData = {
         participantId,
         judgeId: user?.id,
         ...scores
       };
-      
+
       await apiRequest('POST', '/api/scores', scoreData);
-      
+
       // Invalidate leaderboard query to refresh data
       queryClient.invalidateQueries({ queryKey: ['/api/leaderboard'] });
-      
+
       toast({
         title: "Score updated",
         description: "Score has been updated successfully",
@@ -89,19 +89,20 @@ export default function Leaderboard({ user, onLogout }: LeaderboardProps) {
   return (
     <div className="min-h-screen">
       <MainHeader onToggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)} />
-      
+
       <Sidebar 
         isOpen={isSidebarOpen} 
         onClose={() => setIsSidebarOpen(false)}
         onLogout={onLogout}
         isAdmin={isAdmin}
+        user={user}
       />
-      
+
       <main className="container mx-auto px-4 pt-24 pb-16">
         <Card className="bg-gradient-to-b from-teal-100/70 to-teal-50/60">
           <CardContent className="pt-6">
             <h2 className="text-2xl font-bold text-primary mb-6">Leaderboard</h2>
-            
+
             {isLoading ? (
               <div className="flex justify-center py-8">
                 <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
@@ -119,7 +120,7 @@ export default function Leaderboard({ user, onLogout }: LeaderboardProps) {
                   isAdmin={isAdmin}
                   onScoreChange={handleScoreChange}
                 />
-                
+
                 {/* Real-time update indicator */}
                 <div className="mt-4 text-sm text-gray-500 text-right">
                   <span className="inline-block h-2 w-2 rounded-full bg-green-500 mr-1"></span>
