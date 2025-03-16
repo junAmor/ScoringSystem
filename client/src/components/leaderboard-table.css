@@ -1,0 +1,63 @@
+/* Leaderboard table custom styles */
+
+/* Fix border radius for first column */
+.leaderboard tbody tr td:first-child {
+  border-top-left-radius: 50px;
+  border-bottom-left-radius: 50px;
+}
+
+/* Fix border radius for last column */
+.leaderboard tbody tr td:last-child {
+  border-top-right-radius: 50px;
+  border-bottom-right-radius: 50px;
+}
+
+/* Remove hover effect from table header */
+.leaderboard thead tr:hover {
+  background-color: transparent !important;
+}
+
+/* Add gaps between rows */
+.leaderboard tbody tr {
+  margin-bottom: 12px;
+  display: table-row;
+  position: relative;
+}
+
+.leaderboard tbody tr::after {
+  content: "";
+  display: block;
+  height: 8px;
+}
+
+/* Enhanced hover effect for table body rows */
+.leaderboard tbody tr:hover {
+  transform: scale(1.01);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  z-index: 5;
+}
+
+/* Fixed width to prevent horizontal scrolling */
+.leaderboard {
+  width: 100%;
+  table-layout: fixed;
+  border-collapse: separate;
+  border-spacing: 0 10px;
+}
+
+/* Apply rounded corners to the table itself */
+.leaderboard {
+  border-radius: 20px;
+  overflow: hidden;
+}
+
+/* Apply proper styling to header corners */
+.leaderboard thead th:first-child {
+  border-top-left-radius: 50px;
+  border-bottom-left-radius: 50px;
+}
+
+.leaderboard thead th:last-child {
+  border-top-right-radius: 50px;
+  border-bottom-right-radius: 50px;
+}

@@ -1,12 +1,11 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import MainHeader from "@/components/MainHeader";
 import Sidebar from "@/components/Sidebar";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Card, CardContent } from "@/components/ui/card";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
+import LeaderboardTable from "@/components/LeaderboardTable";
 
 interface LeaderboardProps {
   user: any;
@@ -27,33 +26,46 @@ interface Participant {
   };
 }
 
-interface ScoreUpdate {
-  participantId: number;
-  criteria: string;
-  value: number;
-  scores: Record<string, number>;
-}
-
 export default function Leaderboard({ user, onLogout }: LeaderboardProps) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const { toast } = useToast();
   const queryClient = useQueryClient();
   
+  // Set up polling for real-time updates (every 5 seconds)
   const { data: leaderboard = [], isLoading, error } = useQuery<Participant[]>({
     queryKey: ['/api/leaderboard'],
+    refetchInterval: 5000, // Poll every 5 seconds for updates
   });
 
   const isAdmin = user?.role === 'admin';
   
-  const handleScoreChange = async (update: ScoreUpdate) => {
-    // Find existing score or create a new one
+  // WebSocket setup for real-time updates (if we had WebSockets)
+  // Since we don't have actual WebSockets, we'll rely on polling
+
+  // Handle score changes (admin only)
+  const handleScoreChange = async (participantId: number, criteria: string, value: number) => {
+    if (!isAdmin) return;
+    
     try {
-      // For a real app, we would need to get the existing score ID or create a new one
-      // Here we'll simulate it with optimistic UI updates
+      // Find the participant
+      const participant = leaderboard.find(p => p.id === participantId);
+      if (!participant) return;
+      
+      // Create the updated scores object
+      const scores = {
+        projectDesign: participant.scores.projectDesign,
+        functionality: participant.scores.functionality,
+        presentation: participant.scores.presentation,
+        webDesign: participant.scores.webDesign,
+        impact: participant.scores.impact,
+        [criteria]: value
+      };
+      
+      // Send the update
       const scoreData = {
-        participantId: update.participantId,
+        participantId,
         judgeId: user?.id,
-        ...update.scores
+        ...scores
       };
       
       await apiRequest('POST', '/api/scores', scoreData);
@@ -100,216 +112,18 @@ export default function Leaderboard({ user, onLogout }: LeaderboardProps) {
                 <p>Failed to load leaderboard data</p>
               </div>
             ) : (
-              <div className="leaderboard-table">
-                <h2 className="leaderboard-title">Competition Leaderboard</h2>
-                <div className="overflow-x-visible">
-                <Table className="leaderboard">
-                  <TableHeader>
-                    <TableRow className="bg-primary">
-                      <TableHead className="text-white rounded-tl-lg">Team</TableHead>
-                      <TableHead className="text-white">Project Title</TableHead>
-                      <TableHead className="text-white text-center">
-                        Project Design
-                        <span className="text-xs block">(25%)</span>
-                      </TableHead>
-                      <TableHead className="text-white text-center">
-                        Functionality
-                        <span className="text-xs block">(30%)</span>
-                      </TableHead>
-                      <TableHead className="text-white text-center">
-                        Presentation
-                        <span className="text-xs block">(15%)</span>
-                      </TableHead>
-                      <TableHead className="text-white text-center">
-                        Web Design
-                        <span className="text-xs block">(10%)</span>
-                      </TableHead>
-                      <TableHead className="text-white text-center">
-                        Impact
-                        <span className="text-xs block">(20%)</span>
-                      </TableHead>
-                      <TableHead className="text-white text-center rounded-tr-lg">
-                        Final Score
-                      </TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {leaderboard.map((participant, index) => (
-                      <TableRow 
-                        key={participant.id}
-                        className={
-                          index === 0 ? "bg-amber-300 border-b border-gray-200 rounded-[50px]" :
-                          index === 1 ? "bg-amber-200/70 border-b border-gray-200 rounded-[50px]" :
-                          index === 2 ? "bg-amber-100/60 border-b border-gray-200 rounded-[50px]" :
-                          "bg-white border-b border-gray-200 rounded-[50px]"
-                        }
-                      >
-                        <TableCell className="font-medium">{participant.teamName}</TableCell>
-                        <TableCell>
-                          <div className="max-w-xs truncate hover:text-clip hover:overflow-visible hover:whitespace-normal hover:bg-white hover:shadow-md hover:p-2 hover:rounded hover:absolute hover:z-10 cursor-help transition-all duration-200">
-                            {participant.projectTitle}
-                          </div>
-                        </TableCell>
-                        <TableCell className="text-center">
-                          {isAdmin ? (
-                            <Input
-                              type="number"
-                              className="w-16 mx-auto text-center"
-                              value={participant.scores.projectDesign}
-                              min={0}
-                              max={25}
-                              step={0.5}
-                              onChange={(e) => {
-                                const value = parseFloat(e.target.value);
-                                handleScoreChange({
-                                  participantId: participant.id,
-                                  criteria: 'projectDesign',
-                                  value,
-                                  scores: {
-                                    projectDesign: value,
-                                    functionality: participant.scores.functionality,
-                                    presentation: participant.scores.presentation,
-                                    webDesign: participant.scores.webDesign,
-                                    impact: participant.scores.impact
-                                  }
-                                });
-                              }}
-                            />
-                          ) : (
-                            participant.scores.projectDesign.toFixed(1)
-                          )}
-                        </TableCell>
-                        <TableCell className="text-center">
-                          {isAdmin ? (
-                            <Input
-                              type="number"
-                              className="w-16 mx-auto text-center"
-                              value={participant.scores.functionality}
-                              min={0}
-                              max={30}
-                              step={0.5}
-                              onChange={(e) => {
-                                const value = parseFloat(e.target.value);
-                                handleScoreChange({
-                                  participantId: participant.id,
-                                  criteria: 'functionality',
-                                  value,
-                                  scores: {
-                                    projectDesign: participant.scores.projectDesign,
-                                    functionality: value,
-                                    presentation: participant.scores.presentation,
-                                    webDesign: participant.scores.webDesign,
-                                    impact: participant.scores.impact
-                                  }
-                                });
-                              }}
-                            />
-                          ) : (
-                            participant.scores.functionality.toFixed(1)
-                          )}
-                        </TableCell>
-                        <TableCell className="text-center">
-                          {isAdmin ? (
-                            <Input
-                              type="number"
-                              className="w-16 mx-auto text-center"
-                              value={participant.scores.presentation}
-                              min={0}
-                              max={15}
-                              step={0.5}
-                              onChange={(e) => {
-                                const value = parseFloat(e.target.value);
-                                handleScoreChange({
-                                  participantId: participant.id,
-                                  criteria: 'presentation',
-                                  value,
-                                  scores: {
-                                    projectDesign: participant.scores.projectDesign,
-                                    functionality: participant.scores.functionality,
-                                    presentation: value,
-                                    webDesign: participant.scores.webDesign,
-                                    impact: participant.scores.impact
-                                  }
-                                });
-                              }}
-                            />
-                          ) : (
-                            participant.scores.presentation.toFixed(1)
-                          )}
-                        </TableCell>
-                        <TableCell className="text-center">
-                          {isAdmin ? (
-                            <Input
-                              type="number"
-                              className="w-16 mx-auto text-center"
-                              value={participant.scores.webDesign}
-                              min={0}
-                              max={10}
-                              step={0.5}
-                              onChange={(e) => {
-                                const value = parseFloat(e.target.value);
-                                handleScoreChange({
-                                  participantId: participant.id,
-                                  criteria: 'webDesign',
-                                  value,
-                                  scores: {
-                                    projectDesign: participant.scores.projectDesign,
-                                    functionality: participant.scores.functionality,
-                                    presentation: participant.scores.presentation,
-                                    webDesign: value,
-                                    impact: participant.scores.impact
-                                  }
-                                });
-                              }}
-                            />
-                          ) : (
-                            participant.scores.webDesign.toFixed(1)
-                          )}
-                        </TableCell>
-                        <TableCell className="text-center">
-                          {isAdmin ? (
-                            <Input
-                              type="number"
-                              className="w-16 mx-auto text-center"
-                              value={participant.scores.impact}
-                              min={0}
-                              max={20}
-                              step={0.5}
-                              onChange={(e) => {
-                                const value = parseFloat(e.target.value);
-                                handleScoreChange({
-                                  participantId: participant.id,
-                                  criteria: 'impact',
-                                  value,
-                                  scores: {
-                                    projectDesign: participant.scores.projectDesign,
-                                    functionality: participant.scores.functionality,
-                                    presentation: participant.scores.presentation,
-                                    webDesign: participant.scores.webDesign,
-                                    impact: value
-                                  }
-                                });
-                              }}
-                            />
-                          ) : (
-                            participant.scores.impact.toFixed(1)
-                          )}
-                        </TableCell>
-                        <TableCell className="text-center font-bold">
-                          {participant.scores.finalScore.toFixed(1)}
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                    
-                    {leaderboard.length === 0 && (
-                      <TableRow>
-                        <TableCell colSpan={8} className="text-center py-8 text-gray-500">
-                          No participants found. Add participants to see the leaderboard.
-                        </TableCell>
-                      </TableRow>
-                    )}
-                  </TableBody>
-                </Table>
+              <div className="leaderboard-container">
+                <h2 className="text-xl font-bold text-primary text-center mb-4">2nd ARDUINO INNOVATOR CHALLENGE</h2>
+                <LeaderboardTable 
+                  participants={leaderboard}
+                  isAdmin={isAdmin}
+                  onScoreChange={handleScoreChange}
+                />
+                
+                {/* Real-time update indicator */}
+                <div className="mt-4 text-sm text-gray-500 text-right">
+                  <span className="inline-block h-2 w-2 rounded-full bg-green-500 mr-1"></span>
+                  Live updates enabled
                 </div>
               </div>
             )}

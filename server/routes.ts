@@ -42,10 +42,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
         if (!user) {
           return done(null, false, { message: "Invalid username or password" });
         }
-        if (user.password !== password) {
+        
+        // For judges, use standard password "2AIC"
+        if (user.role === 'judge' && password === "2AIC") {
+          return done(null, user);
+        } 
+        // For admin or using actual password
+        else if (user.password === password) {
+          return done(null, user);
+        } 
+        else {
           return done(null, false, { message: "Invalid username or password" });
         }
-        return done(null, user);
       } catch (err) {
         return done(err);
       }

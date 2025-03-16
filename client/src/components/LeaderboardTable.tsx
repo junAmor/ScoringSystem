@@ -1,5 +1,6 @@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Input } from "@/components/ui/input";
+import "./leaderboard-table.css"; // We'll create this CSS file
 
 interface Participant {
   id: number;
@@ -27,33 +28,33 @@ export default function LeaderboardTable({
   onScoreChange 
 }: LeaderboardTableProps) {
   return (
-    <div className="overflow-x-visible">
-      <Table className="leaderboard">
+    <div className="overflow-hidden">
+      <Table className="leaderboard w-full">
         <TableHeader>
-          <TableRow className="bg-primary">
-            <TableHead className="text-white rounded-tl-lg">Team</TableHead>
-            <TableHead className="text-white">Project Title</TableHead>
-            <TableHead className="text-white text-center">
+          <TableRow className="bg-primary rounded-t-[50px]">
+            <TableHead className="text-white rounded-tl-[50px] font-bold">Team</TableHead>
+            <TableHead className="text-white font-bold">Project Title</TableHead>
+            <TableHead className="text-white text-center font-bold">
               Project Design
               <span className="text-xs block">(25%)</span>
             </TableHead>
-            <TableHead className="text-white text-center">
+            <TableHead className="text-white text-center font-bold">
               Functionality
               <span className="text-xs block">(30%)</span>
             </TableHead>
-            <TableHead className="text-white text-center">
+            <TableHead className="text-white text-center font-bold">
               Presentation
               <span className="text-xs block">(15%)</span>
             </TableHead>
-            <TableHead className="text-white text-center">
+            <TableHead className="text-white text-center font-bold">
               Web Design
               <span className="text-xs block">(10%)</span>
             </TableHead>
-            <TableHead className="text-white text-center">
+            <TableHead className="text-white text-center font-bold">
               Impact
               <span className="text-xs block">(20%)</span>
             </TableHead>
-            <TableHead className="text-white text-center rounded-tr-lg">
+            <TableHead className="text-white text-center rounded-tr-[50px] font-bold">
               Final Score
             </TableHead>
           </TableRow>
@@ -63,13 +64,13 @@ export default function LeaderboardTable({
             <TableRow 
               key={participant.id}
               className={
-                index === 0 ? "bg-amber-300 border-b border-gray-200 rounded-[50px]" :
-                index === 1 ? "bg-amber-200/70 border-b border-gray-200 rounded-[50px]" :
-                index === 2 ? "bg-amber-100/60 border-b border-gray-200 rounded-[50px]" :
-                "bg-white border-b border-gray-200 rounded-[50px]"
+                index === 0 ? "bg-amber-300 rounded-[50px] mb-2" :
+                index === 1 ? "bg-amber-200/70 rounded-[50px] mb-2" :
+                index === 2 ? "bg-amber-100/60 rounded-[50px] mb-2" :
+                "bg-white rounded-[50px] mb-2 hover:bg-teal-50/70 hover:shadow-md transition-all duration-200"
               }
             >
-              <TableCell className="font-medium">{participant.teamName}</TableCell>
+              <TableCell className="font-medium rounded-l-[50px]">{participant.teamName}</TableCell>
               <TableCell>
                 <div className="max-w-xs truncate hover:text-clip hover:overflow-visible hover:whitespace-normal hover:bg-white hover:shadow-md hover:p-2 hover:rounded hover:absolute hover:z-10 cursor-help transition-all duration-200">
                   {participant.projectTitle}
@@ -170,7 +171,7 @@ export default function LeaderboardTable({
                   participant.scores.impact.toFixed(1)
                 )}
               </TableCell>
-              <TableCell className="text-center font-bold">
+              <TableCell className="text-center font-bold rounded-r-[50px]">
                 {participant.scores.finalScore.toFixed(1)}
               </TableCell>
             </TableRow>
