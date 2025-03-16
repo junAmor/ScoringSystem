@@ -1,0 +1,147 @@
+body { font-family: Arial, sans-serif; background-color: #f4f4f4; text-align: center; margin: 0; }
+        
+.container { 
+    width: 40%; 
+    margin: auto; 
+    padding: 20px; 
+    margin-top:10rem; 
+    background: white; 
+    border-radius: 10px; 
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2); 
+}
+.hidden { 
+    display: none; 
+}
+input, button { 
+    margin: 10px; 
+    padding: 8px; 
+    font-size: 16px; 
+    width: 80%; 
+}
+button { background-color: teal; color: white; border: none; cursor: pointer; padding: 10px; border-radius: 5px; }
+        button:hover { background-color: darkcyan; }
+        .leaderboard-container { width: 60%; margin: auto; margin-top: 5rem; }
+        .row { display: flex; justify-content: space-between; align-items: center; background: white; margin: 15px 0; padding: 15px; border-radius: 50px; box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2); transition: transform 1.5s ease-in-out; }
+        .highlight { background-color: gold !important; font-weight: bold; }
+        .navbar { background: teal; padding: 15px; position: fixed; top: 3.5rem; right: -350px; width: 250px; height: 100vh; transition: 0.3s; box-shadow: -2px 0 5px rgba(0, 0, 0, 0.2); overflow-y: auto; }
+        .navbar button { background: white; color: teal; padding: 10px; border: none; cursor: pointer; border-radius: 5px; margin: 10px; display: block; width: 80%; }
+        .navbar button:hover { background: darkcyan; color: white; }
+        .menu-icon { position: fixed; top: 15px; right: 15px; font-size: 30px; cursor: pointer; z-index: 1000; }
+        .event-navbar { background: teal; color: white; padding: 15px; text-align: center; font-size: 20px; font-weight: bold; position: fixed; top: 0; width: 100%; box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2); }
+        .event-subtitle { font-size: 16px; }
+
+
+/* Leaderboard */
+
+    .leaderboard {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0 10px; /* Adds gap between rows */
+    }
+    .leaderboard thead th {
+        gap: 20px;
+    }
+    table {
+      width: 100%;
+      table-layout: fixed;
+    }
+    td, th {
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      transition: all 0.3s ease-in-out; /* Smooth animation */
+    }
+    .expand-on-hover:hover {
+      white-space: normal;
+      overflow: visible;
+      background: white;
+      color: black;
+      position: absolute;
+      padding: 10px;
+      max-width: fit-content;
+      z-index: 10px;
+      transition: all 0.3s ease-in-out; /* Smooth transition */
+      box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+    }
+    .leaderboard th, .leaderboard td {
+      padding: 15px;
+      text-align: center;
+      font-size: 20px;
+    }
+    .leaderboard thead th {
+      background-color: #2a8b8b;
+      color: white;
+      border-radius: 50px;
+      padding: 10px;
+      justify-content: space-between;
+      margin: 0;
+    }
+    .leaderboard thead tr {
+      display: table-row;
+    }
+    .leaderboard tbody tr {
+      background-color: #d3d3d3;
+    }
+    .leaderboard tbody tr.winner {
+      background-color: gold;
+      font-weight: bold;
+    }
+    .leaderboard tbody tr.rank-2 {
+      background-color: rgba(255, 215, 0, 0.6); /* Light golden shade */
+    }
+    .leaderboard tbody tr.rank-3 {
+      background-color: rgba(255, 215, 0, 0.4); /* Slight golden shade */
+    }
+    .leaderboard tbody tr:not(.winner) td:last-child {
+      opacity: 15;
+      font-weight: bold;
+    }
+    .leaderboard tbody tr td:first-child {
+      border-top-left-radius: 50px;
+      border-bottom-left-radius: 50px;
+    }
+    .leaderboard tbody tr td:last-child {
+      border-top-right-radius: 50px;
+      border-bottom-right-radius: 50px;
+    }
+    .leaderboard thead tr th:nth-child(2) {
+      width: 600px;
+    }
+    .leaderboard thead tr th:nth-child(3) {
+      width: 80px;
+      font-size: 10px;
+    }
+    .leaderboard thead tr th:nth-child(4) {
+      font-size: 10px;
+      width: 80px;
+    }
+    .leaderboard thead tr th:nth-child(5) {
+      font-size: 10px;
+      width: 80px;
+    }
+    .leaderboard thead tr th:nth-child(6) {
+      font-size: 10px;
+      width: 80px;
+    }
+    .leaderboard thead tr th:nth-child(7) {
+      font-size: 10px;
+      width: 80px;
+    }
+    .leaderboard-title {
+      text-align: start;
+      font-size: 24px;
+      font-weight: bold;
+      margin-top: 50px;
+      margin-left: 50px;
+      margin-bottom: 30px;
+    }
+    .leaderboard-table {
+        background: linear-gradient(to bottom, rgb(186, 241, 241), rgba(186, 241, 241, 0.5));
+        padding: 20px;
+        height: 1000px;
+        border-radius: 10px;
+    }
+
+    .menu-icon {
+      z-index: 1002;
+    }

@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scoring and Evaluating System</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body onclick="closeMenu(event)">
+    <div class="event-navbar">
+        2nd ARDUINO INNOVATOR CHALLENGE<br>
+        <span class="event-subtitle">Microcontroller-Based Competition</span>
+    </div>
+    <br><br><br>
+    <div id="login-container" class="container">
+        <h2>Login</h2>
+        <input type="text" id="username" placeholder="Username"><br>
+        <input type="password" id="password" placeholder="Password"><br>
+        <button onclick="login()">Login</button>
+    </div>
+
+    <div id="leaderboard-container" class="hidden">
+    
+      <div class="menu-icon" onclick="toggleMenu(event)">☰</div>
+      <div id="sidebar" class="navbar">
+          <button onclick="showLeaderboard()">Leaderboard</button>
+          <button onclick="showParticipants()">Participant Accounts</button>
+          <button onclick="showJudges()">Judge Accounts</button>
+          <button onclick="showSettings()">Settings</button>
+          <button onclick="logout()">Logout</button>
+      </div>
+      
+    
+        <div class="leaderboard-table">
+            <div class="leaderboard-title"> <h2>Leaderboard</h2></div>
+        <table class="leaderboard">
+            <thead>
+              <tr>
+                <th>Team</th>
+                <th>Project Title</th>
+                <th>Project Design</th>
+                <th>Functionality</th>
+                <th>Presentation</th>
+                <th>Web Design</th>
+                <th>Impact</th>
+                <th>Final Score</th>
+              </tr>
+            </thead>
+            <tbody id="leaderboard-body">
+              <tr class="winner">
+                <td>Group 1</td>
+                <td class="expand-on-hover">Project Title Here asdfghjklkjytresazxcvbnjytreazxcvbnjhfd</td>
+                <td>25</td>
+                <td>30</td>
+                <td>15</td>
+                <td>10</td>
+                <td>20</td>
+                <td>100</td>
+              </tr>
+              <tr class="rank-2">
+                <td>Group 2</td>
+                <td class="expand-on-hover">Project Title Here</td>
+                <td>25</td>
+                <td>30</td>
+                <td>13</td>
+                <td>10</td>
+                <td>20</td>
+                <td>98</td>
+              </tr>
+              <tr class="rank-3">
+                <td>Group 3</td>
+                <td class="expand-on-hover">Project Title Here</td>
+                <td>25</td>
+                <td>26</td>
+                <td>15</td>
+                <td>9.5</td>
+                <td>20</td>
+                <td>96.5</td>
+              </tr>
+              <tr>
+                <td>Group 4</td>
+                <td class="expand-on-hover">Project Title Here</td>
+                <td>20</td>
+                <td>25</td>
+                <td>15</td>
+                <td>10</td>
+                <td>20</td>
+                <td>89</td>
+              </tr>
+              <tr>
+                <td>Group 5</td>
+                <td class="expand-on-hover">Project Title Here</td>
+                <td>25</td>
+                <td>0</td>
+                <td>15</td>
+                <td>10</td>
+                <td>0</td>
+                <td>50</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        
+    </div>
+
+    <script src="functions.js"></script>
+
+    <script>
+
+    function toggleMenu(event) {
+    console.log("☰ Menu clicked!"); // Debug log
+    event.stopPropagation(); // Prevents bubbling issues
+
+    let sidebar = document.getElementById("sidebar");
+    if (!sidebar) {
+        console.error("Sidebar not found!");
+        return;
+    }
+
+    // Toggle sidebar visibility
+    if (sidebar.style.right === "-250px" || sidebar.style.right === "") {
+        console.log("Opening sidebar...");
+        sidebar.style.right = "0";
+    } else {
+        console.log("Closing sidebar...");
+        sidebar.style.right = "-250px";
+    }
+}
+
+
+// Navigation functions
+function showLeaderboard() {
+    window.location.href = "indexx.html";
+}
+function showParticipants() {
+    window.location.href = "participantsAcc.html";
+}
+function showJudges() {
+    window.location.href = "judgesAcc.html";
+}
+function showSettings() {
+    alert("Settings - Feature coming soon!");
+}
+function logout() {
+    localStorage.removeItem("loggedIn"); 
+
+    let leaderboardContainer = document.getElementById("leaderboard-container");
+    let loginContainer = document.getElementById("login-container");
+
+    if (leaderboardContainer && loginContainer) {
+        // Add fade-out effect before hiding
+        leaderboardContainer.style.transition = "opacity 0.5s ease-out";
+        leaderboardContainer.style.opacity = "0";
+
+        // Delay hiding for the animation to complete
+        setTimeout(() => {
+            leaderboardContainer.classList.add("hidden");
+            loginContainer.classList.remove("hidden");
+
+            // Add fade-in effect for login container
+            loginContainer.style.transition = "opacity 0.5s ease-in";
+            loginContainer.style.opacity = "1";
+        }, 500); // Matches the transition time
+    }
+}
+
+
+    </script>
+
+</body>
+</html>

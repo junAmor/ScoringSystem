@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Judge Evaluation</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="functions.js" defer></script>
+</head>
+<body onload="loadJudgeName()">
+
+    <style>
+        body { font-family: Arial, sans-serif; background-color: #f4f4f4; text-align: center; margin: 0; padding: 20px; }
+.container { width: 50%; margin: auto; background: white; padding: 20px; border-radius: 10px; box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2); }
+h2, h3 { color: teal; }
+label { display: block; margin-top: 15px; font-weight: bold; }
+input[type="range"] { width: 100%; }
+textarea { width: 100%; padding: 10px; margin-top: 10px; }
+button { background-color: teal; color: white; border: none; cursor: pointer; padding: 10px; border-radius: 5px; margin-top: 15px; }
+button:hover { background-color: darkcyan; }
+
+    </style>
+
+    <div class="container">
+        <h2 id="judgeGreeting"></h2>
+        <h3>Evaluation Criteria</h3>
+        
+        <form id="evaluationForm">
+            <label>Project Design (25%)</label>
+            <input type="range" id="projectDesign" min="1" max="100" value="50" oninput="updateScore(this)">
+            <span id="pdScore">50</span>
+            
+            <label>Functionality (30%)</label>
+            <input type="range" id="functionality" min="1" max="100" value="50" oninput="updateScore(this)">
+            <span id="funcScore">50</span>
+
+            <label>Presentation (15%)</label>
+            <input type="range" id="presentation" min="1" max="100" value="50" oninput="updateScore(this)">
+            <span id="presScore">50</span>
+
+            <label>Web Design (10%)</label>
+            <input type="range" id="webDesign" min="1" max="100" value="50" oninput="updateScore(this)">
+            <span id="wdScore">50</span>
+
+            <label>Impact (20%)</label>
+            <input type="range" id="impact" min="1" max="100" value="50" oninput="updateScore(this)">
+            <span id="impScore">50</span>
+
+            <h3>Total Score: <span id="totalScore">0</span></h3>
+
+            <label>Comments / Recommendation</label>
+            <textarea id="comments" rows="3" placeholder="Enter your feedback"></textarea>
+
+            <button type="button" onclick="submitEvaluation()">Submit Evaluation</button>
+        </form>
+    </div>
+
+    <script src="functions.js">
+
+    </script>
+
+</body>
+</html>

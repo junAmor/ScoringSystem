@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Judge Account Management</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        body { font-family: Arial, sans-serif; background-color: #f4f4f4; text-align: center; margin: 0; padding: 20px; }
+        .container { width: 50%; margin: auto; background: white; padding: 20px; border-radius: 10px; box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2); }
+        input, button { margin: 10px; padding: 10px; font-size: 16px; width: 80%; }
+        button { background-color: teal; color: white; border: none; cursor: pointer; padding: 10px; border-radius: 5px; }
+        button:hover { background-color: darkcyan; }
+        table { width: 100%; margin-top: 20px; border-collapse: collapse; }
+        th, td { padding: 10px; border-bottom: 1px solid #ddd; text-align: left; }
+        th { background-color: teal; color: white; }
+        .delete-btn { background-color: red; color: white; cursor: pointer; border: none; padding: 5px; border-radius: 5px; }
+    </style>
+</head>
+<body>
+
+    
+    <div class="menu-icon" onclick="toggleMenu(event)">☰</div>
+    <div id="sidebar" class="navbar">
+        <button onclick="showLeaderboard()">Leaderboard</button>
+        <button onclick="showParticipants()">Participant Accounts</button>
+        <button onclick="showJudges()">Judge Accounts</button>
+        <button onclick="showSettings()">Settings</button>
+        <button onclick="logout()">Logout</button>
+    </div>
+
+
+    <div class="container">
+        <h2>Judge Account Management</h2>
+        <input type="text" id="username" placeholder="Judge Username">
+        <input type="text" id="password" placeholder="Password">
+        <button onclick="addJudge()">Add Judge</button>
+        
+        <table>
+            <thead>
+                <tr>
+                    <th>Judge Username</th>
+                    <th>Password</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody id="judgeTable">
+            </tbody>
+        </table>
+    </div>
+
+    <script src="functions.js"></script>
+    <script>
+
+        function toggleMenu(event) {
+        console.log("☰ Menu clicked!"); // Debug log
+        event.stopPropagation(); // Prevents bubbling issues
+    
+        let sidebar = document.getElementById("sidebar");
+        if (!sidebar) {
+            console.error("Sidebar not found!");
+            return;
+        }
+    
+        // Toggle sidebar visibility
+        if (sidebar.style.right === "-250px" || sidebar.style.right === "") {
+            console.log("Opening sidebar...");
+            sidebar.style.right = "0";
+        } else {
+            console.log("Closing sidebar...");
+            sidebar.style.right = "-250px";
+        }
+    }
+    
+    
+    // Navigation functions
+    function showLeaderboard() {
+        window.location.href = "indexx.html";
+    }
+    function showParticipants() {
+        window.location.href = "participantsAcc.html";
+    }
+    function showJudges() {
+        window.location.href = "judgesAcc.html";
+    }
+    function showSettings() {
+        alert("Settings - Feature coming soon!");
+    }
+
+    function logout() {
+    localStorage.removeItem("loggedIn"); // Remove login session
+
+    let pageContent = document.querySelector(".container"); // Main content
+    if (pageContent) {
+        pageContent.style.transition = "opacity 0.5s ease-out";
+        pageContent.style.opacity = "0";
+
+        setTimeout(() => {
+            window.location.href = "indexx.html"; // Redirect to login page
+        }, 500); // Matches the animation time
+    } else {
+        window.location.href = "indexx.html"; // Fallback redirect
+    }
+}
+
+
+
+
+window.onload = function () {
+    if (localStorage.getItem("loggedIn") !== "true") {
+        window.location.href = "login.html"; // Redirect to login if not authenticated
+    }
+};
+
+
+    
+        </script>
+</body>
+</html>
