@@ -1,6 +1,7 @@
+import { useState, useEffect, useRef } from "react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Input } from "@/components/ui/input";
-import "./leaderboard-table.css"; // We'll create this CSS file
+import "./leaderboard-table.css";
 
 interface Participant {
   id: number;
@@ -27,50 +28,112 @@ export default function LeaderboardTable({
   isAdmin, 
   onScoreChange 
 }: LeaderboardTableProps) {
+  const [animationClasses, setAnimationClasses] = useState<Record<number, string>>({});
+  const prevRankingsRef = useRef<Record<number, number>>({});
+  
+  // Track rank changes for animation
+  useEffect(() => {
+    if (participants.length === 0) return;
+    
+    // Create current rankings
+    const currentRankings: Record<number, number> = {};
+    participants.forEach((p, index) => {
+      currentRankings[p.id] = index;
+    });
+    
+    // Skip on first render
+    if (Object.keys(prevRankingsRef.current).length === 0) {
+      prevRankingsRef.current = currentRankings;
+      return;
+    }
+    
+    // Compare with previous rankings to determine move direction
+    const newAnimationClasses: Record<number, string> = {};
+    
+    participants.forEach((participant) => {
+      const prevRank = prevRankingsRef.current[participant.id];
+      const currentRank = currentRankings[participant.id];
+      
+      if (prevRank !== undefined && prevRank !== currentRank) {
+        if (prevRank > currentRank) {
+          // Moved up in ranking
+          newAnimationClasses[participant.id] = 'move-up';
+        } else if (prevRank < currentRank) {
+          // Moved down in ranking
+          newAnimationClasses[participant.id] = 'move-down';
+        }
+      }
+    });
+    
+    setAnimationClasses(newAnimationClasses);
+    prevRankingsRef.current = currentRankings;
+    
+    // Clear animation classes after animation completes
+    const timer = setTimeout(() => {
+      setAnimationClasses({});
+    }, 1100);
+    
+    return () => clearTimeout(timer);
+  }, [participants]);
+  
+  // Sort participants by score
+  const sortedParticipants = [...participants].sort((a, b) => 
+    b.scores.finalScore - a.scores.finalScore
+  );
+  
   return (
     <div className="overflow-hidden">
       <Table className="leaderboard w-full">
         <TableHeader>
           <TableRow className="bg-primary rounded-t-[50px]">
-            <TableHead className="text-white rounded-tl-[50px] font-bold">Team</TableHead>
-            <TableHead className="text-white font-bold">Project Title</TableHead>
-            <TableHead className="text-white text-center font-bold">
+            <TableHead className="text-white rounded-tl-[50px] font-bold w-[120px]">Team</TableHead>
+            <TableHead className="text-white font-bold w-[150px]">Project Title</TableHead>
+            <TableHead className="text-white text-center font-bold w-[100px]">
               Project Design
               <span className="text-xs block">(25%)</span>
             </TableHead>
-            <TableHead className="text-white text-center font-bold">
+            <TableHead className="text-white text-center font-bold w-[100px]">
               Functionality
               <span className="text-xs block">(30%)</span>
             </TableHead>
-            <TableHead className="text-white text-center font-bold">
+            <TableHead className="text-white text-center font-bold w-[100px]">
               Presentation
               <span className="text-xs block">(15%)</span>
             </TableHead>
-            <TableHead className="text-white text-center font-bold">
+            <TableHead className="text-white text-center font-bold w-[100px]">
               Web Design
               <span className="text-xs block">(10%)</span>
             </TableHead>
-            <TableHead className="text-white text-center font-bold">
+            <TableHead className="text-white text-center font-bold w-[100px]">
               Impact
               <span className="text-xs block">(20%)</span>
             </TableHead>
-            <TableHead className="text-white text-center rounded-tr-[50px] font-bold">
+            <TableHead className="text-white text-center rounded-tr-[50px] font-bold w-[100px]">
               Final Score
             </TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
-          {participants.map((participant, index) => (
+          {sortedParticipants.map((participant, index) => (
             <TableRow 
               key={participant.id}
-              className={
-                index === 0 ? "bg-amber-300 rounded-[50px] mb-2" :
-                index === 1 ? "bg-amber-200/70 rounded-[50px] mb-2" :
-                index === 2 ? "bg-amber-100/60 rounded-[50px] mb-2" :
-                "bg-white rounded-[50px] mb-2 hover:bg-teal-50/70 hover:shadow-md transition-all duration-200"
-              }
+              className={`
+                ${index === 0 ? "bg-amber-300 rounded-[50px]" :
+                  index === 1 ? "bg-amber-200/70 rounded-[50px]" :
+                  index === 2 ? "bg-amber-100/60 rounded-[50px]" :
+                  "bg-white rounded-[50px] hover:bg-teal-50/70 hover:shadow-md"
+                }
+                ${animationClasses[participant.id] || ''}
+              `}
             >
-              <TableCell className="font-medium rounded-l-[50px]">{participant.teamName}</TableCell>
+              <TableCell className="font-medium rounded-l-[50px]">
+                <div className="flex items-center">
+                  <span className="bg-primary text-white font-bold w-7 h-7 flex items-center justify-center rounded-full mr-2">
+                    {index + 1}
+                  </span>
+                  {participant.teamName}
+                </div>
+              </TableCell>
               <TableCell>
                 <div className="max-w-xs truncate hover:text-clip hover:overflow-visible hover:whitespace-normal hover:bg-white hover:shadow-md hover:p-2 hover:rounded hover:absolute hover:z-10 cursor-help transition-all duration-200">
                   {participant.projectTitle}
@@ -83,8 +146,8 @@ export default function LeaderboardTable({
                     className="w-16 mx-auto text-center"
                     value={participant.scores.projectDesign}
                     min={0}
-                    max={25}
-                    step={0.5}
+                    max={100}
+                    step={1}
                     onChange={(e) => onScoreChange(
                       participant.id, 
                       'projectDesign', 
@@ -102,8 +165,8 @@ export default function LeaderboardTable({
                     className="w-16 mx-auto text-center"
                     value={participant.scores.functionality}
                     min={0}
-                    max={30}
-                    step={0.5}
+                    max={100}
+                    step={1}
                     onChange={(e) => onScoreChange(
                       participant.id, 
                       'functionality', 
@@ -121,8 +184,8 @@ export default function LeaderboardTable({
                     className="w-16 mx-auto text-center"
                     value={participant.scores.presentation}
                     min={0}
-                    max={15}
-                    step={0.5}
+                    max={100}
+                    step={1}
                     onChange={(e) => onScoreChange(
                       participant.id, 
                       'presentation', 
@@ -140,8 +203,8 @@ export default function LeaderboardTable({
                     className="w-16 mx-auto text-center"
                     value={participant.scores.webDesign}
                     min={0}
-                    max={10}
-                    step={0.5}
+                    max={100}
+                    step={1}
                     onChange={(e) => onScoreChange(
                       participant.id, 
                       'webDesign', 
@@ -159,8 +222,8 @@ export default function LeaderboardTable({
                     className="w-16 mx-auto text-center"
                     value={participant.scores.impact}
                     min={0}
-                    max={20}
-                    step={0.5}
+                    max={100}
+                    step={1}
                     onChange={(e) => onScoreChange(
                       participant.id, 
                       'impact', 
@@ -171,7 +234,7 @@ export default function LeaderboardTable({
                   participant.scores.impact.toFixed(1)
                 )}
               </TableCell>
-              <TableCell className="text-center font-bold rounded-r-[50px]">
+              <TableCell className="text-center font-bold rounded-r-[50px] text-lg">
                 {participant.scores.finalScore.toFixed(1)}
               </TableCell>
             </TableRow>

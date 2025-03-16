@@ -64,12 +64,31 @@ export default function JudgeEvaluation({ user, onLogout }: JudgeEvaluationProps
 
   const submitMutation = useMutation({
     mutationFn: async (data: Score) => {
-      const res = await apiRequest('POST', '/api/scores', data);
+      // Convert all score values to numbers
+      const numericData = {
+        ...data,
+        participantId: Number(data.participantId),
+        judgeId: Number(data.judgeId),
+        projectDesign: Number(data.projectDesign),
+        functionality: Number(data.functionality),
+        presentation: Number(data.presentation),
+        webDesign: Number(data.webDesign),
+        impact: Number(data.impact)
+      };
+      
+      const res = await apiRequest('POST', '/api/scores', numericData);
+      if (!res.ok) {
+        const errorData = await res.json();
+        throw new Error(errorData.message || "Failed to submit evaluation");
+      }
       return res.json();
     },
     onSuccess: () => {
+      // Invalidate queries to refresh data
       queryClient.invalidateQueries({ queryKey: [`/api/scores/judge/${user?.id}`] });
       queryClient.invalidateQueries({ queryKey: ['/api/leaderboard'] });
+      
+      // Reset form to defaults or load next participant
       setScores({
         participantId: selectedParticipantId || 0,
         judgeId: user?.id,
@@ -80,13 +99,16 @@ export default function JudgeEvaluation({ user, onLogout }: JudgeEvaluationProps
         impact: 50,
         comments: ""
       });
+      
+      // Show success message
       setSuccessMessage("Evaluation submitted successfully!");
       setIsSuccessModalOpen(true);
     },
-    onError: () => {
+    onError: (error: any) => {
+      console.error("Submission error:", error);
       toast({
         title: "Error",
-        description: "Failed to submit evaluation",
+        description: error.message || "Failed to submit evaluation. Please try again.",
         variant: "destructive",
       });
     },
