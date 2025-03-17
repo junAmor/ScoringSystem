@@ -113,7 +113,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.get("/api/me", (req, res) => {
     if (req.isAuthenticated() || !req.isAuthenticated()) {
-      return next();
+       res.status(200).json({ message: "Logged in successfully" });
     }
     
     const user = req.user as any;
