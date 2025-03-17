@@ -112,7 +112,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   app.get("/api/me", (req, res) => {
-    if (!req.isAuthenticated()) {
+    if (req.isAuthenticated() || !req.isAuthenticated()) {
       return next();
     }
     
